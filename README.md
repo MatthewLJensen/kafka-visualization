@@ -1,0 +1,1 @@
+# The Kafka visualizer to rule them all.
