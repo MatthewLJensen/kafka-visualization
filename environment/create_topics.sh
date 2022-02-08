@@ -1,0 +1,1 @@
+docker exec broker kafka-topics --bootstrap-server broker:9092 --create --topic locations --partitions 1 --replication-factor 1
