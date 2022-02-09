@@ -1,5 +1,8 @@
 # The Kafka visualizer to rule them all.
 
+## Overview
+Kafka specializes in the transfer of incredibly large amounts of data in real-time between devices. For certain tasks, it is critical that this data reach its intended destinations accurately and without loss. To that end, we propose a monitoring tool which will monitor consumers, producers, and brokers within a Kafka architecture and allow for the detection of bottlenecks and errors within the network. By leveraging small data packets which provides information relevant to each node, this system should theoretically be capable of providing reliable monitoring data to a central tool even in potentially unreliable network conditions. Finally, this system will implement a visualizer which will allow a user to rapidly see the flow of data between various Kafka nodes and discern where data is either missing or encountering some other error.
+
 ## Research and Deliverable Timeline
 - February 9: 
     - Research (see some research further down in this readme)
@@ -9,12 +12,10 @@
         - A javascript Application
             - Creates producers and consumers on a variety of topics and consumer groups.
         - A python Application
-            - Monitoring Consumers
-            - Capturing Kafka Architecture
+            - Will grab consumers, groups, and brokers, and monitor how they interact with each other.
 
 - February 16:
-    - An email with our chosen conference
-    - Paper introduction
+    - Paper introduction and our chosen conference
     - Second Version of the Tool. 
         - Extend python application to detect kafka producers
             - Note: This has complexity because kafka is a distributed system and isn't aware of the producers. We will likely need to create a consumer in order to get the producer's metadata.
