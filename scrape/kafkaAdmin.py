@@ -52,8 +52,6 @@ def updateKafkaArchitecture():
                 for member in group.members:
                     consumer = Consumer(member.client_id, group.state, group.group, member.member_id, member.client_host, member.member_metadata.subscription, member.member_assignment)
                     consumers.append(consumer)
-    for consumer in consumers:
-        print(consumer)
 
 def print_kafka_architecture():
     print('\nBrokers:')

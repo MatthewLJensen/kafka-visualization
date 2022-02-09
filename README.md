@@ -73,6 +73,14 @@ Check out the [Kafka Docs](https://kafka.apache.org/documentation/#gettingStarte
   - ```cd environment```
   - ```node index.js```
 
+### Python
+ - pip install kafka-python
+You may also need to install confluent-kafka
+ - pip install confluent-kafka
+
+Then, run the scraping script.
+ - ```cd scrape```
+ - python .\kafkaAdmin.py
 
 ## Notes
 The bash riles don't need to have the full path or the extension when running them from the docker exec command.
