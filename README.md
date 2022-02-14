@@ -1,6 +1,6 @@
 # The Kafka visualizer to rule them all.
 
-### Intuitive Kafka Data Stream Integrity Visualization
+### Real-Time Visualization of Kafka Data Stream Integrity
 By Matthew Jensen & Miro Manestar
 
 ## Overview
