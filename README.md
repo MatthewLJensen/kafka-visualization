@@ -4,7 +4,7 @@
 By Matthew Jensen & Miro Manestar
 
 ## Overview
-Kafka specializes in the transfer of incredibly large amounts of data in real-time between devices. For certain tasks, it is critical that this data reach its intended destinations accurately and without loss. Currently, most tools used to track and diagnose these issues are commercially licensed products without public, associated, research. To that end, we propose a tool which will monitor consumers, producers, and brokers within a Kafka architecture and allow for the detection of bottlenecks and errors within the network. By leveraging small data packets which provides information relevant to each node, this system should theoretically be capable of providing reliable monitoring data to a central tool even in potentially unreliable network conditions. In order to display this monitoring data, this system will implement a visualizer which will allow a user to rapidly see the flow of data between various Kafka nodes and discern where data is either missing or encountering some other error. This visualizer will also serve to reduce the complexity of Kafka and thus enable users unfamiliar with the platform and protocol to better understand how their architecture is configured, thus further reducing data loss from configuration errors.
+Apache Kafka specializes in the transfer of incredibly large amounts of data in real-time between devices. Kafka is specially important when it is critical that data reach its intended destinations accurately and without loss. Currently, most tools used to track and diagnose data transmission over Kafka are commercially licensed and expensive to use. Most of these tools focus on statistics and integrations, but they don't provide both visualization and error detection. These tools also lack corresponding research to explain their implementations. Our contribution is a tool that monitors Kafka consumers, producers, and brokers and allows for the detection of bottlenecks and errors within data transmission. A dashboard allows users to rapidly see the flow of data between various Kafka nodes and discern where data is either missing or encountering some other error. An example where an error could occur would be an erroneous user configuration that relies on a few, overloaded, nodes. This dashboard also serves to reduce the complexity of Kafka and enable users unfamiliar with the platform and protocol to better understand how their architecture is configured, thus further reducing data loss from configuration errors.
 
 ## Research and Deliverable Timeline
 - February 9: 
@@ -50,8 +50,12 @@ Kafka specializes in the transfer of incredibly large amounts of data in real-ti
 [Blog](https://netflixtechblog.medium.com/inca-message-tracing-and-loss-detection-for-streaming-data-netflix-de4836fc38c9)
 
  - Offset Explorer
- Visually explor the architecture of your Kafka cluster.
+ Visually explore the architecture of your Kafka cluster.
  [Website](https://kafkatool.com/index.html)
+
+ - Kafka Visualization (by SoftwareMill)
+A nice visualizer for a hypothetical Kafka cluster. Great for learning what the various terms mean.
+[Hosted Here](https://softwaremill.com/kafka-visualisation/)
 
 ### Interesting Papers/Use-Cases for Kafka
 [Consistency and Completeness: Rethinking Distributed Stream Processing in Apache Kafka](https://dl.acm.org/doi/10.1145/3448016.3457556)
