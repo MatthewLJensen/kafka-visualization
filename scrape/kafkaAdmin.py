@@ -1,4 +1,5 @@
-from kafka import KafkaAdminClient
+from kafka import KafkaAdminClient, KafkaClient, KafkaConsumer
+#from confluent_kafka.admin import AdminClient
 
 #print(dir(KafkaAdminClient))
 
@@ -20,8 +21,24 @@ topics = []
 consumerGroups = []
 consumers = []
 
+admin = KafkaAdminClient(bootstrap_servers=['localhost:9092'])
+
+# confluent Kafka
 # Kafka Admin Client
-admin = KafkaAdminClient(bootstrap_servers='localhost:9092')
+# admin = AdminClient({'bootstrap.servers': 'localhost:9092'})
+# groups = admin.list_groups()
+# print(groups)
+# print(dir(groups[1]))
+# print(groups[0].members[0].client_id)
+
+# print(admin.describe_configs(groups[1]))
+# for group in groups:
+#     print(admin.describe_configs(group))
+# print(admin.describe_configs(groups[0].members[0]))
+
+def getProucers():
+    return brokers
+    
 
 
 def updateKafkaArchitecture():

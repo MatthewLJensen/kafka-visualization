@@ -28,6 +28,9 @@ const produce = async () => {
                         value: JSON.stringify({
                             latitude: getRandomInRange(-180, 180, 5),
                             longitude: getRandomInRange(-180, 180, 5)
+                        }),
+                        headers: JSON.stringify({
+                            identifier: clientId
                         })
                     }
                 ],

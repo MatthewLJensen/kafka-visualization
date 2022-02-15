@@ -11,7 +11,9 @@ const consume = async (topic, groupId, clientId) => {
 	await consumer.subscribe({ topic })
 	await consumer.run({
 		eachMessage: ({ message }) => {
+			console.log(message)
 			console.log(message.value.toString())
+			console.log(message.headers.toString())
 		},
 	})
 }
