@@ -8,6 +8,7 @@ produce().catch((err) => {
 
 // start the consumers, and log any errors
 // We start 3 consumers, each with a different topic, 2 of them share the same groupId
+//consume()
 consume("locations", "geo", "client1").catch((err) => {
 	console.error("error in consumer: ", err)
 })
