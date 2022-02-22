@@ -1,4 +1,4 @@
-const { Kafka } = require("kafkajs")
+import { Kafka } from "kafkajs"
 const brokers = ["localhost:9092"]
 
 
@@ -16,4 +16,6 @@ const consume = async (topic, groupId, clientId) => {
 	})
 }
 
-module.exports = consume
+export {
+	consume
+}

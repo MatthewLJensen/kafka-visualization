@@ -1,8 +1,19 @@
-const produce = require("./producer")
-const consume = require("./consumer")
+import { Server } from 'socket.io'
+import { produce } from './producer.js'
+import { consume } from './consumer.js'
+
+const io = new Server({ cors: {
+	origin: '*',
+} })
+io.on('connection', socket => {
+	console.log('Client connected')
+})
+io.listen(4000)
 
 // call the `produce` function and log an error if it occurs
-produce().catch((err) => {
+produce(count => {
+	io.emit('count', count)
+}).catch((err) => {
 	console.error("error in producer: ", err)
 })
 

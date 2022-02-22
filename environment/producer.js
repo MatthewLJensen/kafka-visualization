@@ -1,5 +1,5 @@
 // from https://www.sohamkamani.com/nodejs/working-with-kafka/
-const { Kafka } = require("kafkajs")
+import { Kafka } from 'kafkajs'
 
 // the client ID lets kafka know who's producing the messages
 const clientId = "web-producer"
@@ -11,11 +11,14 @@ const topic = "locations"
 // initialize a new kafka client and initialize a producer from it
 const kafka = new Kafka({ clientId, brokers })
 const producer = kafka.producer()
+const traceProducer = kafka.producer()
 
 // we define an async function that writes a new message each second
-const produce = async () => {
+const produce = async (callback) => {
     await producer.connect()
+    await traceProducer.connect()
     let i = 0
+    let intervalCount = 0
 
     // after the produce has connected, we start an interval timer
     setInterval(async () => {
@@ -37,13 +40,38 @@ const produce = async () => {
             })
 
             i++
-
+            intervalCount++
             console.log(`Produced ${i}.`)
 
         } catch (err) {
             console.error("could not write message " + err)
         }
     }, 2000)
+
+    setInterval(async () => {
+        try {
+            await traceProducer.send({
+                topic: 'trace',
+                messages: [
+                    {
+                        key: i.toString(),
+                        value: JSON.stringify({
+                            latitude: getRandomInRange(-180, 180, 5),
+                            longitude: getRandomInRange(-180, 180, 5)
+                        }),
+                        headers: {
+                            'identifier': clientId
+                        }
+                    }
+                ],
+            })
+        } catch (err) {
+            console.error("could not write trace " + err)
+        }
+
+        callback(intervalCount)
+        intervalCount = 0
+    }, 5000)
 }
 
 function getRandomInRange(from, to, fixed) {
@@ -51,4 +79,6 @@ function getRandomInRange(from, to, fixed) {
     // .toFixed() returns string, so ' * 1' is a trick to convert to number
 }
 
-module.exports = produce
+export {
+    produce
+}
