@@ -3,18 +3,14 @@ import { Kafka } from 'kafkajs'
 
 
 // we can define the list of brokers in the cluster
-const brokers = ["localhost:9092"]
+const BROKERS = ["localhost:9092"]
 // this is the topic to which we want to write messages
-const topic = "locations"
-
-
-
-
+const TOPIC = "locations"
 
 // we define an async function that writes a new message each second
 const produce = async (clientId, primaryInterval, secondaryInterval) => {
     // initialize a new kafka client and initialize a producer from it
-    const kafka = new Kafka({ clientId, brokers })
+    const kafka = new Kafka({ clientId, BROKERS })
     const producer = kafka.producer()
     const traceProducer = kafka.producer()
 
@@ -33,7 +29,7 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
     //  handle the primary producer
     setInterval(async () => {
         try {
-            await produce_main(producer, topic, generateMessage(mainIndex), numProduced => {
+            await produce_main(producer, TOPIC, generateMessage(mainIndex), numProduced => {
                 produced += numProduced
             })
             mainIndex++
@@ -65,30 +61,6 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
         }
     }, secondaryInterval)
 
-    // setInterval(async () => {
-    //     try {
-    //         await traceProducer.send({
-    //             topic: 'trace',
-    //             messages: [
-    //                 {
-    //                     key: i.toString(),
-    //                     value: JSON.stringify({
-    //                         latitude: getRandomInRange(-180, 180, 5),
-    //                         longitude: getRandomInRange(-180, 180, 5)
-    //                     }),
-    //                     headers: {
-    //                         'identifier': clientId
-    //                     }
-    //                 }
-    //             ],
-    //         })
-    //     } catch (err) {
-    //         console.error("could not write trace " + err)
-    //     }
-
-    //     callback(intervalCount)
-    //     intervalCount = 0
-    // }, 5000)
     function generateMessage(index) {
         return [
             {
@@ -146,8 +118,8 @@ const produce_secondary = async (producer, topic, messages) => {
 
 
 function getRandomInRange(from, to, fixed) {
-    return (Math.random() * (to - from) + from).toFixed(fixed) * 1
     // .toFixed() returns string, so ' * 1' is a trick to convert to number
+    return (Math.random() * (to - from) + from).toFixed(fixed) * 1
 }
 
 export {

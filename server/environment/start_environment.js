@@ -1,15 +1,5 @@
 import { produce } from './producer.js'
 import { consume } from './consumer.js'
-//import { Server } from 'socket.io'
-
-// const io = new Server({ cors: {
-// 	origin: '*',
-// } })
-// io.on('connection', socket => {
-// 	console.log('Client connected')
-// })
-// io.listen(4000)
-
 
 // call the `produce` function and log an error if it occurs. This function creates a new primary and trace producer
 produce("default producer", 2000, 5000).catch((err) => {

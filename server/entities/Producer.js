@@ -4,9 +4,11 @@ export class Producer {
         this.createdAt = createdAt
         this.produced = 0
     }
+
     getProduced() {
         return this.produced
     }
+    
     updateProduced(produced) {
         this.produced += parseInt(produced)
     }

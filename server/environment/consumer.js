@@ -1,8 +1,6 @@
 import { Kafka } from "kafkajs"
 const brokers = ["localhost:9092"]
 
-
-
 const consume = async (topic, groupId, clientId) => {
     const kafka = new Kafka({ clientId, brokers })
     const consumer = kafka.consumer({ groupId: groupId, clientId: clientId })

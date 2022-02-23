@@ -1,4 +1,3 @@
-//import { consume } from "../services/scanProducers"
 import { Server } from 'socket.io'
 import { Kafka } from 'kafkajs'
 import { Producer } from './entities/Producer.js'
@@ -32,11 +31,12 @@ admin.connect()
 async function getTopics() {
     let temp_topics = await admin.listTopics()
     let current_topics = []
-    for (let i = 0; i < temp_topics.length; i++) {
-        if (temp_topics[i] != "__consumer_offsets") {
-            current_topics.push(temp_topics[i])
-        }
-    }
+
+    temp_topics.forEach(topic => {
+        if (topic !== '__consumer_offsets')
+            current_topics.push(topic)
+    })
+
     return current_topics
 }
 
@@ -59,8 +59,8 @@ async function getConsumers() {
     return current_consumers
 }
 
-const consume_metadata = async (topic, groupId, clientId) => {
-    const consumer = kafka.consumer({ groupId: groupId, clientId: clientId })
+const consume_metadata = async (topic, groupId, id) => {
+    const consumer = kafka.consumer({ groupId: groupId, clientId: id })
 
 	await consumer.connect()
 	await consumer.subscribe({ topic })
@@ -92,10 +92,6 @@ const checkForOldProducers = async () => {
 async function describeKafka() {
     topics = await getTopics()
     consumers = await getConsumers()
-    //await getProducers()
-    // console.log(topics)
-    // console.log(consumerGroups)
-    // console.log(consumers)
 
     io.emit('topics', topics)
     io.emit('consumers', consumers)
@@ -106,50 +102,3 @@ setInterval(() => {
 }, 5000)
 
 consume_metadata("trace", "monitoring_consumer_group", "monitoring_server")
-
-
-
-
-
-// async function getProducers() {
-//     console.log("Getting producers...")
-
-//     const scan = async (groupId, clientId) => {
-//         const kafka = new Kafka({ clientId, brokers })
-//         const consumer = kafka.consumer({ groupId: groupId, clientId: clientId })
-
-//         consume(consumer)
-
-//         let timeout = setTimeout(() => {
-//             console.log("killing consumer")
-//             const func = async () => {
-//                 (async () => {
-//                     await consumer.disconnect()
-//                 })()
-//             }
-//             func()
-//         }, 5000)
-
-//     }
-
-//     const consume = async (consumer) => {
-
-//         await consumer.connect()
-//         for (let i = 0; i < topics.length; i++) {
-//             await consumer.subscribe({ topic: topics[i] })
-//         }
-
-//         await consumer.run({
-//             eachMessage: ({ message }) => {
-//                 let producerId = message.headers.identifier.toString()
-//                 if (!producers.includes(producerId)) {
-//                     producers.push(producerId)
-//                     console.log("Found producer: " + producerId)
-//                 }
-//             },
-//         })
-//     }
-
-//     scan("test3", "test")
-
-// }

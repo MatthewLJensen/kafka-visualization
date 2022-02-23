@@ -1,7 +1,6 @@
-const { Kafka } = require("kafkajs")
+import { Kafka } from 'kafkajs'
+
 const brokers = ["localhost:9092"]
-
-
 
 const consume = async (topic, groupId, clientId) => {
     const kafka = new Kafka({ clientId, brokers })
@@ -11,7 +10,6 @@ const consume = async (topic, groupId, clientId) => {
     await consumer.subscribe({ topic: 'locations' })
 	await consumer.run({
 		eachMessage: ({ message }) => {
-            //console.log(message)
             console.log("_________________________________________")
 			console.log(message.key.toString())
             console.log(message.value.toString())
@@ -22,4 +20,6 @@ const consume = async (topic, groupId, clientId) => {
 
 consume("test", "test", "test")
 
-module.exports = consume
+export { 
+    consume
+}
