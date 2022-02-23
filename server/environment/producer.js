@@ -46,9 +46,20 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
     // handle the secondary producer
     setInterval(async () => {
         try {
-            await produce_secondary(traceProducer, "trace", await generateTraceMessage(secondaryIndex))
-            secondaryIndex++
-            console.log(`Produced trace message #${secondaryIndex}.`)
+            const send = async () => {
+                await produce_secondary(traceProducer, "trace", await generateTraceMessage(secondaryIndex))
+                secondaryIndex++
+                console.log(`Produced trace message #${secondaryIndex}.`)
+            }
+
+            process.on('SIGINT', () => {
+                await send()
+                console.log('Exiting')
+                process.exit(1)
+            })
+
+            await send()
+
         } catch (err) {
             console.error("could not write message " + err)
         }
