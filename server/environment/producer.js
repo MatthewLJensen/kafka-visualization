@@ -3,14 +3,14 @@ import { Kafka } from 'kafkajs'
 
 
 // we can define the list of brokers in the cluster
-const BROKERS = ["localhost:9092"]
+const brokers = ["localhost:9092"]
 // this is the topic to which we want to write messages
 const TOPIC = "locations"
 
 // we define an async function that writes a new message each second
 const produce = async (clientId, primaryInterval, secondaryInterval) => {
     // initialize a new kafka client and initialize a producer from it
-    const kafka = new Kafka({ clientId, BROKERS })
+    const kafka = new Kafka({ clientId, brokers })
     const producer = kafka.producer()
     const traceProducer = kafka.producer()
 
@@ -48,7 +48,7 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
                 console.log(`Produced trace message #${secondaryIndex}.`)
             }
 
-            process.on('SIGINT', () => {
+            process.on('SIGINT', async () => {
                 await send()
                 console.log('Exiting')
                 process.exit(1)
