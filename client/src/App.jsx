@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 import { createUseStyles } from 'react-jss'
+import clsx from 'clsx'
 
 const socket = io(':4000')
 
@@ -38,6 +39,11 @@ const useStyles = createUseStyles(theme => ({
         padding: '20px',
         borderRadius: theme.radius[2],
         boxShadow: theme.boxShadow[0]
+    },
+
+    inactive: {
+        backgroundColor: theme.palette.background.secondary,
+        color: theme.palette.background.highlight,
     }
 }))
 
@@ -96,7 +102,7 @@ function App() {
                         let lastUpdated = new Date(producers[key].lastUpdated)
                         return (
                             // A producer is considered inactive if it hasn't produced in over 10 seconds.
-                            <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : classes.inactiveEntity} key={index}>
+                            <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : clsx(classes.entity, classes.inactive)} key={index}>
                                 <h2>Name: {producers[key].id}</h2>
                                 <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
                                 <h2>Produced Messages: {producers[key].produced}</h2>
