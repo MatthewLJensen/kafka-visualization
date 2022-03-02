@@ -1,10 +1,49 @@
 import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
-import './App.css'
+import { createUseStyles } from 'react-jss'
 
 const socket = io(':4000')
 
+const useStyles = createUseStyles(theme => ({
+    root: {
+        minheight: '100vh',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: theme.palette.background.primary,
+
+        '& h1': {
+            color: theme.palette.text.primary,
+            textAlign: 'center',
+            margin: 0
+        }
+    },
+
+    entityList: {
+        margin: '20px',
+
+        '&>div': {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            marginTop: '20px',
+        }
+    },
+
+    entity: {
+        backgroundColor: theme.palette.background.highlight,
+        color: theme.palette.text.muted,
+        padding: '20px',
+        borderRadius: theme.radius[2],
+        boxShadow: theme.boxShadow[0]
+    }
+}))
+
 function App() {
+    const classes = useStyles()
+
     const [message, setMessage] = useState('')
     const [producers, setProducers] = useState([])
     const [consumers, setConsumers] = useState([])
@@ -44,14 +83,15 @@ function App() {
     }, [])
 
     return (
-        <div className="App">
+        <div className={classes.root}>
 
-            <div className="EntityList">
+            <div className={classes.entityList}>
                 <h1>Producers</h1>
+                <div>
                 {
                     Object.keys(producers).map((key, index) => {
                         return (
-                            <div className='EntityItem' key={index}>
+                            <div className={classes.entity} key={index}>
                                 <h2>Name: {producers[key].id}</h2>
                                 <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
                                 <h2>Produced Messages: {producers[key].produced}</h2>
@@ -59,25 +99,25 @@ function App() {
                         )
                     })
                 }
+                </div>
             </div>
-            <div className="EntityList">
+            <div className={classes.entityList}>
                 <h1>Consumers</h1>
-                {
-                    
-                    consumers.map((consumer, index) => {
-                        return (
-                            <div className='EntityItem' key={index}>
-                                <h2>Name: {consumer.consumerId}</h2>
-                                <h2>GroupID: {consumer.groupId}</h2>
-                                <h2>Host: {consumer.host}</h2>
-                            </div>
-                        )
-                    })
-                }
+                <div>
+                    {
+                        
+                        consumers.map((consumer, index) => {
+                            return (
+                                <div className={classes.entity} key={index}>
+                                    <h2>Name: {consumer.consumerId}</h2>
+                                    <h2>GroupID: {consumer.groupId}</h2>
+                                    <h2>Host: {consumer.host}</h2>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
             </div>
-
-
-            {/*  */}
         </div>
     )
 }
