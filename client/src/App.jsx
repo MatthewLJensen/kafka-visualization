@@ -98,8 +98,9 @@ function App() {
                 <div>
                 {
                     Object.keys(producers).map((key, index) => {
-                        let now = new Date()
-                        let lastUpdated = new Date(producers[key].lastUpdated)
+                        const now = Date.now()
+                        const lastUpdated = new Date(producers[key].createdAt).getTime()
+                        console.log(Date(producers[key].createdAt))
                         return (
                             // A producer is considered inactive if it hasn't produced in over 10 seconds.
                             <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : clsx(classes.entity, classes.inactive)} key={index}>
