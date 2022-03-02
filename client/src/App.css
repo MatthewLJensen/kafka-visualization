@@ -11,3 +11,8 @@
   margin-bottom: 10px;
   background-color: #f5f5f5;
 }
+
+.InactiveEntityItem {
+  margin-bottom: 10px;
+  background-color: #c56969;
+}
