@@ -1,0 +1,12 @@
+// {type:deployment}
+// {generate:true}
+[Pumba]-[Docker]
+[Apache Kafka]-[Docker]
+[Docker]-[Testing Architecture]
+[React]-[Frontend Node.js]
+[Socket.IO]-[Frontend Node.js]
+[Socket.IO]-[Backend Node.js]
+[KafkaJS]-[Backend Node.js]
+[KafkaJS]-[Apache Kafka]
+[Backend Node.js]-[Error Detection Server]
+[Frontend Node.js]-[Frontend/Visualization]
