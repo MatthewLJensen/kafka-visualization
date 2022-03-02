@@ -57,12 +57,14 @@ function App() {
             setProducers(data)
         };
         const consumersUpdateListener = (data) => {
+            console.log(consumers)
             setConsumers(data)
         };
         const messagesUpdateListener = (data) => {
             setMessages(data)
         };
         const topicsUpdateListener = (data) => {
+            console.log(data)
             setTopics(data)
         };
 
@@ -90,8 +92,11 @@ function App() {
                 <div>
                 {
                     Object.keys(producers).map((key, index) => {
+                        let now = new Date()
+                        let lastUpdated = new Date(producers[key].lastUpdated)
                         return (
-                            <div className={classes.entity} key={index}>
+                            // A producer is considered inactive if it hasn't produced in over 10 seconds.
+                            <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : classes.inactiveEntity} key={index}>
                                 <h2>Name: {producers[key].id}</h2>
                                 <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
                                 <h2>Produced Messages: {producers[key].produced}</h2>
@@ -116,6 +121,21 @@ function App() {
                             )
                         })
                     }
+                </div>
+            </div>
+            <div className={classes.entityList}>
+                <h1>Topics</h1>
+                <div>
+                {
+                    
+                    topics.map((topic, index) => {
+                        return (
+                            <div className={classes.entity} key={index}>
+                                <h2>{topic}</h2>
+                            </div>
+                        )
+                    })
+                }
                 </div>
             </div>
         </div>
