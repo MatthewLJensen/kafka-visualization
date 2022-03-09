@@ -3,6 +3,8 @@ import { io } from 'socket.io-client'
 import { createUseStyles } from 'react-jss'
 import clsx from 'clsx'
 
+import Viz from './Viz'
+
 const socket = io(':4000')
 
 const useStyles = createUseStyles(theme => ({
@@ -145,6 +147,8 @@ function App() {
                 }
                 </div>
             </div>
+
+            <Viz />
         </div>
     )
 }
