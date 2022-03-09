@@ -12,7 +12,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-jss": "^10.9.0",
-    "socket.io-client": "^4.4.1"
+    "socket.io-client": "^4.4.1",
+    "vis-network": "^9.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
