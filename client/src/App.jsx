@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { io } from 'socket.io-client'
 import { createUseStyles } from 'react-jss'
 import clsx from 'clsx'
@@ -14,6 +14,7 @@ const useStyles = createUseStyles(theme => ({
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: theme.palette.background.primary,
+        flexWrap: 'wrap',
 
         '& h1': {
             color: theme.palette.text.primary,
@@ -58,16 +59,20 @@ function App() {
     const [messages, setMessages] = useState([])
     const [topics, setTopics] = useState([])
 
+    const visData = useRef(null)
+
     useEffect(() => {
         socket.on('connect', () => console.log('Connected to server'))
 
         const producersUpdateListener = (data) => {
             console.log(data)
             setProducers(data)
+            visData.current.producer = data
         };
         const consumersUpdateListener = (data) => {
             console.log(data)
             setConsumers(data)
+            visData.current.consumers = data
         };
         const messagesUpdateListener = (data) => {
             setMessages(data)
@@ -75,6 +80,7 @@ function App() {
         const topicsUpdateListener = (data) => {
             console.log(data)
             setTopics(data)
+            visData.current.topics = data
         };
 
         socket.on('producers', producersUpdateListener)
@@ -154,7 +160,7 @@ function App() {
                     }
                 </div>
             </div>
-            <Viz />
+            <Viz data={visData} />
         </div>
     )
 }
