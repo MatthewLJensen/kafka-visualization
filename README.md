@@ -90,7 +90,7 @@ Then, run the scraping script.
  - python .\kafkaAdmin.py
 
 ## Notes
-The bash riles don't need to have the full path or the extension when running them from the docker exec command.
+The bash files don't need to have the full path or the extension when running them from the docker exec command.
 
 To get the brokers from zookeper:
 ```docker exec -it zookeeper zookeeper-shell localhost:2181 ls /brokers/ids```

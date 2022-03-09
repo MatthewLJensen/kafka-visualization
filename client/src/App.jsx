@@ -80,8 +80,6 @@ function App() {
         socket.on('messages', messagesUpdateListener)
         socket.on('topics', topicsUpdateListener)
 
-
-
         return () => {
             socket.off('producers', producersUpdateListener)
             socket.off('consumers', consumersUpdateListener)
@@ -91,46 +89,74 @@ function App() {
 
     }, [])
 
+    const [consumeTopic, setConsumeTopic] = useState(null)
+
+    const consume = (topic) => {
+        console.log(topic)
+        setConsumeTopic(topic)
+    }
+
+    useEffect(() => {
+        if (consumeTopic) {
+            socket.emit('consume', consumeTopic)
+
+            const topicsMessageListener = (data) => {
+                console.log(data)
+                setMessages(prevMessages => {
+                    return [...prevMessages, data]
+                })
+                // setMessages([...messages, data])
+            };
+
+            socket.on('filtered_message', topicsMessageListener)
+
+            return () => {
+                socket.off('filtered_message', topicsMessageListener)
+            };
+        }
+
+    }, [consumeTopic])
+
     return (
         <div className={classes.root}>
 
             <div className={classes.entityList}>
                 <h1>Producers</h1>
                 <div>
-                {
-                    Object.keys(producers).map((key, index) => {
-                        const now = Date.now()
-                        const lastUpdated = new Date(producers[key].lastUpdated).getTime()
-                        //console.log(Date(producers[key].createdAt))
-                        return (
-                            // A producer is considered inactive if it hasn't produced in over 10 seconds.
-                            <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : clsx(classes.entity, classes.inactive)} key={index}>
-                                <h2>Name: {producers[key].id}</h2>
-                                <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
-                                <h2>Last Updated: {timeStamp(new Date(producers[key].lastUpdated))}</h2>
-                                <h2>Produced Messages: {producers[key].produced}</h2>
-                                <h2>Topic: {producers[key].topic}</h2>
+                    {
+                        Object.keys(producers).map((key, index) => {
+                            const now = Date.now()
+                            const lastUpdated = new Date(producers[key].lastUpdated).getTime()
+                            //console.log(Date(producers[key].createdAt))
+                            return (
+                                // A producer is considered inactive if it hasn't produced in over 10 seconds.
+                                <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : clsx(classes.entity, classes.inactive)} key={index}>
+                                    <h2>Name: {producers[key].id}</h2>
+                                    <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
+                                    <h2>Last Updated: {timeStamp(new Date(producers[key].lastUpdated))}</h2>
+                                    <h2>Produced Messages: {producers[key].produced}</h2>
+                                    <h2>Topic: {producers[key].topic}</h2>
 
-                            </div>
-                        )
-                    })
-                }
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             </div>
 
             <div className={classes.entityList}>
                 <h1>Topics</h1>
                 <div>
-                {
-                    
-                    topics.map((topic, index) => {
-                        return (
-                            <div className={classes.entity} key={index}>
-                                <h2>{topic}</h2>
-                            </div>
-                        )
-                    })
-                }
+                    {
+
+                        topics.map((topic, index) => {
+                            return (
+                                <div className={classes.entity} key={index} onClick={() => consume(topic)}>
+                                    <h2>{topic}</h2>
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             </div>
 
@@ -138,7 +164,7 @@ function App() {
                 <h1>Consumers</h1>
                 <div>
                     {
-                        
+
                         consumers.map((consumer, index) => {
                             return (
                                 <div className={classes.entity} key={index}>
@@ -153,7 +179,25 @@ function App() {
                 </div>
             </div>
 
+            <div>
+                {
+                    console.log(messages)
+                }
+                {
+                    consumeTopic && messages.map((message, index) => {
+                        return (
+                            <div className={classes.entity} key={index}>
+                                <h2>Message: {message}</h2>
+                            </div>
+                        )
+                    })
+                }
+            </div>
+
         </div>
+
+
+
     )
 }
 

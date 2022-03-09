@@ -9,10 +9,18 @@ const brokers = ["localhost:9092"]
 const io = new Server({ cors: {
 	origin: '*',
 } })
+
 io.on('connection', socket => {
 	console.log('Client connected')
+    socket.on("consume", (topic) => {
+        console.log("consume", topic)
+        consume_topic(topic, "client_consumer_group", "client_" + socket.id)
+    })
 })
 io.listen(4000)
+
+
+
 
 
 // Global variables
@@ -88,6 +96,22 @@ const consume_metadata = async (topic, groupId, id) => {
 
             // update frontend
             io.emit('producers', producers)
+        },
+    })
+}
+
+const consume_topic = async (topic, groupId, id) => {
+    const client_consumer = kafka.consumer({ groupId: groupId, clientId: id })
+
+	await client_consumer.connect()
+	await client_consumer.subscribe({ topic })
+    await client_consumer.run({
+        eachMessage: ({ message }) => {
+
+            console.log("message received")
+            console.log(message.value.toString())
+            // update frontend
+            io.emit('filtered_message', message.value.toString())
         },
     })
 }
