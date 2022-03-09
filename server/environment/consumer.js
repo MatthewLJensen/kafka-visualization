@@ -1,12 +1,14 @@
 import { Kafka } from "kafkajs"
 const brokers = ["localhost:9092"]
 
-const consume = async (topic, groupId, clientId) => {
+const consume = async (topics, groupId, clientId) => {
     const kafka = new Kafka({ clientId, brokers })
     const consumer = kafka.consumer({ groupId: groupId, clientId: clientId })
 
 	await consumer.connect()
-	await consumer.subscribe({ topic })
+	for (let topic of topics){
+		await consumer.subscribe({ topic })
+	}
 	await consumer.run({
 		eachMessage: ({ message }) => {
 			//console.log(message.value.toString())

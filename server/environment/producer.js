@@ -4,8 +4,7 @@ import { Kafka } from 'kafkajs'
 
 // we can define the list of brokers in the cluster
 const brokers = ["localhost:9092"]
-// this is the topic to which we want to write messages
-const TOPIC = "locations"
+
 
 // we define an async function that writes a new message each second
 const produce = async (clientId, primaryInterval, secondaryInterval) => {
@@ -13,6 +12,9 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
     const kafka = new Kafka({ clientId, brokers })
     const producer = kafka.producer()
     const traceProducer = kafka.producer()
+
+    // this is the topic to which we want to write messages
+    const TOPIC = "locations"
 
     let mainIndex = 0
     let secondaryIndex = 0
@@ -43,7 +45,7 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
     setInterval(async () => {
         try {
             const send = async () => {
-                await produce_secondary(traceProducer, "trace", await generateTraceMessage(secondaryIndex))
+                await produce_secondary(traceProducer, "trace", await generateTraceMessage(secondaryIndex, TOPIC))
                 secondaryIndex++
                 console.log(`Produced trace message #${secondaryIndex}.`)
             }
@@ -70,14 +72,15 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
                     longitude: getRandomInRange(-180, 180, 5)
                 }),
                 headers: {
-                    'identifier': clientId
+                    identifier: clientId
                 }
             }
         ]
     }
 
     // making this async so it blocks and doesn't risk having the produced variable become modified before it is used
-    async function generateTraceMessage(index) {
+    async function generateTraceMessage(index, topic) {
+        console.log("topic: " + topic)
         let messages = [
             {
                 key: index.toString(),
@@ -85,8 +88,9 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
                     numProduced: produced,
                 }),
                 headers: {
-                    'producerId': clientId,
-                    'startTime': createdAt
+                    producerId: clientId,
+                    startTime: createdAt,
+                    topic: topic
                 }
             }
         ]
