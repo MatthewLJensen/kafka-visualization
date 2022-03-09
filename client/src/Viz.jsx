@@ -2,14 +2,11 @@ import React, { useEffect, useRef } from 'react'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
-const Viz = ({ data }) => {
+const Viz = ({ producers, consumers, topics }) => {
     const visRef = useRef(null)
     
-    const { producers, consumers, topics } = data.current
 
     const startNetwork = () => {
-        if (data.current)
-            return
 
         let nodesArray = []
         let edgesArray = []
@@ -30,20 +27,18 @@ const Viz = ({ data }) => {
         const nodes = new DataSet(nodesArray)
         const edges = new DataSet(edgesArray)
 
-        const visData = {
+        const data = {
             nodes: nodes, edges: edges
         }
 
-        console.log(nodesArray, edgesArray)
+        const options = { interaction: { zoomView: false } }
 
-        const options = {}
-
-        const network = new Network(visRef.current, visData, options)
+        const network = new Network(visRef.current, data, options)
     }
 
     useEffect(() => {
         startNetwork()
-    }, [visRef])
+    }, [visRef, producers, consumers, topics])
 
     return (
         <div>
