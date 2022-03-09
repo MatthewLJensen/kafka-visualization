@@ -1,5 +1,5 @@
 import { Server } from 'socket.io'
-import { Kafka } from 'kafkajs'
+import { Kafka, AssignerProtocol } from 'kafkajs'
 import { Producer } from './entities/Producer.js'
 
 const brokers = ["localhost:9092"]
@@ -33,7 +33,7 @@ async function getTopics() {
     let current_topics = []
 
     temp_topics.forEach(topic => {
-        if (topic !== '__consumer_offsets')
+        if (topic !== '__consumer_offsets' && topic !== 'trace')
             current_topics.push(topic)
     })
 
@@ -48,12 +48,22 @@ async function getConsumers() {
     let describedGroups = await admin.describeGroups(groupIds)
     for (let group of describedGroups.groups) {
         for (let consumer of group.members) {
-            current_consumers.push({
-                groupId: group.groupId,
-                consumerId: consumer.clientId,
-                host: consumer.clientHost,
-                subscriptions: consumer.memberMetadata.toString()
-            })
+            if (consumer.clientId !== "JSAdmin") {
+                // console.log(consumer.clientId)
+                // console.log()
+                //console.log(consumer.memberMetadata)
+                //console.log(AssignerProtocol.MemberAssignment.decode(consumer.memberAssignment))
+                //console.log(AssignerProtocol.MemberAssignment.decode(consumer.memberAssignment).userData.toString())
+                //console.log(AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata))
+                //console.log(AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata).userData.toString())
+                current_consumers.push({
+                    groupId: group.groupId,
+                    consumerId: consumer.clientId,
+                    host: consumer.clientHost,
+                    subscriptions: AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata)
+                })
+            }
+
         }
     }
     return current_consumers
@@ -68,8 +78,13 @@ const consume_metadata = async (topic, groupId, id) => {
         eachMessage: ({ message }) => {
             let producerId = message.headers.producerId.toString()
             let createdAt = message.headers.startTime.toString()
-            add_producer(producerId, createdAt)
+            let topic = null
+            if (message.headers.hasOwnProperty('topic'))
+                topic = message.headers.topic.toString()
+
+            add_producer(producerId, createdAt, topic)
             producers[producerId].updateProduced(JSON.parse(message.value.toString()).numProduced)
+            producers[producerId].topic = topic
 
             // update frontend
             io.emit('producers', producers)
@@ -77,9 +92,9 @@ const consume_metadata = async (topic, groupId, id) => {
     })
 }
 
-const add_producer = (producerId, createdAt) => {
+const add_producer = (producerId, createdAt, topic) => {
     if (!producers.hasOwnProperty(producerId)) {
-        producers[producerId] = new Producer(producerId, createdAt)
+        producers[producerId] = new Producer(producerId, createdAt, topic)
     }
 }
 

@@ -62,10 +62,11 @@ function App() {
         socket.on('connect', () => console.log('Connected to server'))
 
         const producersUpdateListener = (data) => {
+            console.log(data)
             setProducers(data)
         };
         const consumersUpdateListener = (data) => {
-            console.log(consumers)
+            console.log(data)
             setConsumers(data)
         };
         const messagesUpdateListener = (data) => {
@@ -101,37 +102,24 @@ function App() {
                 {
                     Object.keys(producers).map((key, index) => {
                         const now = Date.now()
-                        const lastUpdated = new Date(producers[key].createdAt).getTime()
-                        console.log(Date(producers[key].createdAt))
+                        const lastUpdated = new Date(producers[key].lastUpdated).getTime()
+                        //console.log(Date(producers[key].createdAt))
                         return (
                             // A producer is considered inactive if it hasn't produced in over 10 seconds.
                             <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : clsx(classes.entity, classes.inactive)} key={index}>
                                 <h2>Name: {producers[key].id}</h2>
                                 <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
+                                <h2>Last Updated: {timeStamp(new Date(producers[key].lastUpdated))}</h2>
                                 <h2>Produced Messages: {producers[key].produced}</h2>
+                                <h2>Topic: {producers[key].topic}</h2>
+
                             </div>
                         )
                     })
                 }
                 </div>
             </div>
-            <div className={classes.entityList}>
-                <h1>Consumers</h1>
-                <div>
-                    {
-                        
-                        consumers.map((consumer, index) => {
-                            return (
-                                <div className={classes.entity} key={index}>
-                                    <h2>Name: {consumer.consumerId}</h2>
-                                    <h2>GroupID: {consumer.groupId}</h2>
-                                    <h2>Host: {consumer.host}</h2>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-            </div>
+
             <div className={classes.entityList}>
                 <h1>Topics</h1>
                 <div>
@@ -148,6 +136,24 @@ function App() {
                 </div>
             </div>
 
+            <div className={classes.entityList}>
+                <h1>Consumers</h1>
+                <div>
+                    {
+                        
+                        consumers.map((consumer, index) => {
+                            return (
+                                <div className={classes.entity} key={index}>
+                                    <h2>Name: {consumer.consumerId}</h2>
+                                    <h2>GroupID: {consumer.groupId}</h2>
+                                    {/* <h2>Host: {consumer.host}</h2> */}
+                                    <h2>Topic(s): {consumer.subscriptions.topics.join(', ')}</h2>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            </div>
             <Viz />
         </div>
     )
