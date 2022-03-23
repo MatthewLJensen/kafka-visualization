@@ -2,11 +2,21 @@ import React, { useEffect, useRef } from 'react'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
-const Viz = ({ producers, consumers, topics }) => {
+const Viz = () => {
     const visRef = useRef(null)
-    
+    const network = useRef(null)
+    const data = useRef({})
 
-    const startNetwork = () => {
+    const startNetwork = ({ detail }) => {
+        const key = Object.keys(detail)[0]
+        
+        if (key)
+            data.current[key] = detail[key]
+
+        if ( !(data.current.consumers && data.current.producers && data.current.topics) )
+            return
+
+        const { producers, consumers, topics } = data.current
 
         let nodesArray = []
         let edgesArray = []
@@ -27,23 +37,26 @@ const Viz = ({ producers, consumers, topics }) => {
         const nodes = new DataSet(nodesArray)
         const edges = new DataSet(edgesArray)
 
-        const data = {
+        const graph = {
             nodes: nodes, edges: edges
         }
 
         const options = { interaction: { zoomView: false } }
 
-        const network = new Network(visRef.current, data, options)
+        if (!network.current)
+            network.current = visRef.current && new Network(visRef.current, graph, options)
+        else
+            network.current.setData(graph)
     }
 
     useEffect(() => {
-        startNetwork()
-    }, [visRef, producers, consumers, topics])
+        window.addEventListener('producersUpdate', startNetwork)
+        window.addEventListener('consumersUpdate', startNetwork)
+        window.addEventListener('topicsUpdate', startNetwork)
+    }, [visRef])
 
     return (
-        <div>
-            <div id="network" ref={visRef} style={{ width: '100%', height: '600px' }}></div>
-        </div>
+        <div id="network" ref={visRef} style={{ width: '100%', height: '600px' }}></div>
     )
 }
 

@@ -62,19 +62,30 @@ function App() {
         socket.on('connect', () => console.log('Connected to server'))
 
         const producersUpdateListener = (data) => {
-            console.log(data)
             setProducers(data)
+
+            const evt = new CustomEvent('producersUpdate', { detail: { producers: data } })
+            window.dispatchEvent(evt)
         };
         const consumersUpdateListener = (data) => {
-            console.log(data)
             setConsumers(data)
+
+            const evt = new CustomEvent('consumersUpdate', { detail: { consumers: data } })
+            window.dispatchEvent(evt)
+
         };
         const messagesUpdateListener = (data) => {
             setMessages(data)
+
+            const evt = new CustomEvent('messagesUpdate', { detail: data })
+            window.dispatchEvent(evt)
+
         };
         const topicsUpdateListener = (data) => {
-            console.log(data)
             setTopics(data)
+
+            const evt = new CustomEvent('topicsUpdate', { detail: { topics: data } })
+            window.dispatchEvent(evt)
         };
 
         socket.on('producers', producersUpdateListener)
@@ -183,7 +194,7 @@ function App() {
 
             <div>
                 {
-                    console.log(messages)
+                    // console.log(messages)
                 }
                 {
                     consumeTopic && messages.map((message, index) => {
@@ -195,8 +206,10 @@ function App() {
                     })
                 }
             </div>
-
-            <Viz producers={producers} consumers={consumers} topics={topics} />
+            
+            <div id="visualizer-parent">
+                <Viz />
+            </div>
         </div>
 
 
