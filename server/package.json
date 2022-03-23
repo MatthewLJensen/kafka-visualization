@@ -8,13 +8,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "env": "node ./environment/start_environment.js",
     "server": "node ./index.js",
-    "start": "npm run env && server"
-
+    "start": "concurrently --kill-others \"npm run env\" \"npm run server\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "kafkajs": "^1.15.0",
     "socket.io": "^4.4.1"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
   }
 }
