@@ -2,7 +2,6 @@
 // {generate:true}
 [Docker]
 [Apache Kafka]Runs on-[Docker]
-[Docker]Houses-[Testing Architecture]
 [React]Runs on-[Frontend Node.js]
 [Socket.IO]Updates-[Frontend Node.js]
 [Socket.IO]Runs on-[Backend Node.js]

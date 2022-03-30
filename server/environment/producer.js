@@ -81,7 +81,7 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
     // making this async so it blocks and doesn't risk having the produced variable become modified before it is used
     async function generateTraceMessage(index, topic) {
         console.log("topic: " + topic)
-        let messages = [
+        let message = [
             {
                 key: index.toString(),
                 value: JSON.stringify({
@@ -95,10 +95,10 @@ const produce = async (clientId, primaryInterval, secondaryInterval) => {
             }
         ]
 
-        // reset produced
+        // reset global produced variable
         produced = 0
 
-        return messages
+        return message
     }
 }
 
