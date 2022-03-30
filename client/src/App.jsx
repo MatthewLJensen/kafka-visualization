@@ -47,6 +47,10 @@ const useStyles = createUseStyles(theme => ({
     inactive: {
         backgroundColor: theme.palette.background.secondary,
         color: theme.palette.background.highlight,
+    },
+
+    visualizerContainer:{
+        width: '100%',
     }
 }))
 
@@ -57,6 +61,7 @@ function App() {
     const [consumers, setConsumers] = useState([])
     const [messages, setMessages] = useState([])
     const [topics, setTopics] = useState([])
+    const [activeNode, setActiveNode] = useState(null)
 
     useEffect(() => {
         socket.on('connect', () => console.log('Connected to server'))
@@ -133,6 +138,10 @@ function App() {
     return (
         <div className={classes.root}>
 
+            <div id="visualizer-parent" className={classes.visualizerContainer}>
+                <Viz />
+            </div>
+
             <div className={classes.entityList}>
                 <h1>Producers</h1>
                 <div>
@@ -206,10 +215,8 @@ function App() {
                     })
                 }
             </div>
-            
-            <div id="visualizer-parent">
-                <Viz />
-            </div>
+
+
         </div>
 
 
