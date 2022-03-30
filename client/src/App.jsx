@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 import { createUseStyles } from 'react-jss'
 import clsx from 'clsx'
 
-import Viz from './Viz'
+import Graph from './Graph'
 
 const socket = io(':4000')
 
@@ -130,27 +130,22 @@ function App() {
                 setMessages(prevMessages => {
                     return [...prevMessages, data]
                 })
-                // setMessages([...messages, data])
-            };
+            }
 
             socket.on('filtered_message', topicsMessageListener)
 
             return () => {
                 socket.off('filtered_message', topicsMessageListener)
-            };
+            }
         }
 
     }, [consumeTopic])
-
-    useEffect(() => {
-        console.log('activeNode', activeNode)
-    }, [activeNode])
 
     return (
         <div className={classes.root}>
 
             <div id="visualizer-parent" className={classes.visualizerContainer}>
-                <Viz setActiveNode={setActiveNode}/>
+                <Graph setActiveNode={setActiveNode}/>
             </div>
 
             <div className={classes.entityList}>
@@ -162,11 +157,9 @@ function App() {
                             const lastUpdated = new Date(producers[key].lastUpdated).getTime()
                             const concatId = `producer_${producers[key].id}`
                             const classCombination = clsx(classes.entity, Math.abs(now - lastUpdated) > 10000 ? classes.inactive : '', (concatId === activeNode) ? classes.selected : '' )
-                            
-                            //console.log(Date(producers[key].createdAt))
+
                             return (
                                 // A producer is considered inactive if it hasn't produced in over 10 seconds.
-                                
                                 <div className={classCombination} key={index}>
                                     <h2>Name: {producers[key].id}</h2>
                                     <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
@@ -185,7 +178,6 @@ function App() {
                 <h1>Topics</h1>
                 <div>
                     {
-
                         topics.map((topic, index) => {
                             const concatId = `topic_${topic}`
                             const classCombination = clsx(classes.entity, (concatId === activeNode) ? classes.selected : '' )
@@ -203,8 +195,6 @@ function App() {
                 <h1>Consumers</h1>
                 <div>
                     {
-                        
-
                         consumers.map((consumer, index) => {
                             const concatId = `consumer_${consumer.consumerId}`
                             const classCombination = clsx(classes.entity, (concatId === activeNode) ? classes.selected : '' )
@@ -222,9 +212,6 @@ function App() {
             </div>
 
             <div>
-                {
-                    // console.log(messages)
-                }
                 {
                     consumeTopic && messages.map((message, index) => {
                         return (

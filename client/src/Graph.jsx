@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
-const Viz = (props) => {
+const Graph = (props) => {
     const visRef = useRef(null)
     const network = useRef(null)
     const data = useRef({})
@@ -19,7 +19,7 @@ const Viz = (props) => {
         if (key)
             data.current[key] = detail[key]
 
-        if (!(data.current.consumers && data.current.producers && data.current.topics))
+        if ( !(data.current.consumers && data.current.producers && data.current.topics) )
             return
 
         const { producers, consumers, topics } = data.current
@@ -28,20 +28,48 @@ const Viz = (props) => {
         let edgesArray = []
         Object.keys(producers).forEach(key => {
             const producer = producers[key]
-            nodesArray.push({ id: `producer_${producer.id}`, group: 'producers', level: 1, label: producer.id, color: colors.producer, })
+            nodesArray.push({ 
+                id: `producer_${producer.id}`, 
+                group: 'producers', 
+                level: 1, 
+                label: producer.id, 
+                color: colors.producer, 
+            })
 
             const edgeId = `producer_${producer.id}-topic_${producer.topic}`
-            edgesArray.push({ id: edgeId, from: `producer_${producer.id}`, to: `topic_${producer.topic}`, arrows: 'to', })
+            edgesArray.push({ 
+                id: edgeId, 
+                from: `producer_${producer.id}`, 
+                to: `topic_${producer.topic}`, 
+                arrows: 'to', 
+            })
         })
         consumers.forEach(consumer => {
-            nodesArray.push({ id: `consumer_${consumer.consumerId}`, group: 'consumers', level: 3, label: consumer.consumerId, color: colors.consumer, })
+            nodesArray.push({ 
+                id: `consumer_${consumer.consumerId}`, 
+                group: 'consumers', 
+                level: 3, 
+                label: consumer.consumerId, 
+                color: colors.consumer, 
+            })
 
             consumer.subscriptions.topics.forEach(topic => {
                 const edgeId = `consumer_${consumer.consumerId}-topic_${topic}`
-                edgesArray.push({ id: edgeId, from: `consumer_${consumer.consumerId}`, to: `topic_${topic}`, arrows: 'to' })
+                edgesArray.push({ 
+                    id: edgeId, 
+                    from: `consumer_${consumer.consumerId}`, 
+                    to: `topic_${topic}`, 
+                    arrows: 'to' 
+                })
             })
         })
-        topics.forEach(topic => nodesArray.push({ id: `topic_${topic}`, group: 'topics', level: 2, label: topic, color: colors.topic }))
+        topics.forEach(topic => nodesArray.push({ 
+            id: `topic_${topic}`, 
+            group: 'topics', 
+            level: 2, 
+            label: topic, 
+            color: colors.topic 
+        }))
 
         network.current && nodesArray.forEach((node, index) => {
             const positions = network.current.getPositions()
@@ -79,15 +107,14 @@ const Viz = (props) => {
             network.current = visRef.current && new Network(visRef.current, graph, options)
 
             network.current.on("selectNode", function (params) {
-                var selectedNodeId = params.nodes[0];
-                var node = network.current.body.nodes[selectedNodeId];
+                var selectedNodeId = params.nodes[0]
+                var node = network.current.body.nodes[selectedNodeId]
                 props.setActiveNode(node.id)
-            });
+            })
 
             network.current.on("deselectNode", function (params) {
                 props.setActiveNode(null)
-            });
-
+            })
 
         } else {
             network.current.body.data.nodes.update(nodesArray)
@@ -104,6 +131,12 @@ const Viz = (props) => {
         window.addEventListener('producersUpdate', startNetwork)
         window.addEventListener('consumersUpdate', startNetwork)
         window.addEventListener('topicsUpdate', startNetwork)
+
+        return () => {
+            window.removeEventListener('producersUpdate')
+            window.removeEventListener('consumersUpdate')
+            window.removeEventListener('topicsUpdate')
+        }
     }, [])
 
     return (
@@ -111,4 +144,4 @@ const Viz = (props) => {
     )
 }
 
-export default Viz
+export default Graph
