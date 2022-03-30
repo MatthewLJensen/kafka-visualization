@@ -51,6 +51,13 @@ const useStyles = createUseStyles(theme => ({
 
     visualizerContainer:{
         width: '100%',
+    },
+
+    selected: {
+        borderColor: theme.palette.accent.yellow,
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderRadius: theme.radius[2],
     }
 }))
 
@@ -135,11 +142,15 @@ function App() {
 
     }, [consumeTopic])
 
+    useEffect(() => {
+        console.log('activeNode', activeNode)
+    }, [activeNode])
+
     return (
         <div className={classes.root}>
 
             <div id="visualizer-parent" className={classes.visualizerContainer}>
-                <Viz />
+                <Viz setActiveNode={setActiveNode}/>
             </div>
 
             <div className={classes.entityList}>
@@ -149,10 +160,14 @@ function App() {
                         Object.keys(producers).map((key, index) => {
                             const now = Date.now()
                             const lastUpdated = new Date(producers[key].lastUpdated).getTime()
+                            const concatId = `producer_${producers[key].id}`
+                            const classCombination = clsx(classes.entity, Math.abs(now - lastUpdated) > 10000 ? classes.inactive : '', (concatId === activeNode) ? classes.selected : '' )
+                            
                             //console.log(Date(producers[key].createdAt))
                             return (
                                 // A producer is considered inactive if it hasn't produced in over 10 seconds.
-                                <div className={(Math.abs(now - lastUpdated) < 10000) ? classes.entity : clsx(classes.entity, classes.inactive)} key={index}>
+                                
+                                <div className={classCombination} key={index}>
                                     <h2>Name: {producers[key].id}</h2>
                                     <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
                                     <h2>Last Updated: {timeStamp(new Date(producers[key].lastUpdated))}</h2>
@@ -172,8 +187,10 @@ function App() {
                     {
 
                         topics.map((topic, index) => {
+                            const concatId = `topic_${topic}`
+                            const classCombination = clsx(classes.entity, (concatId === activeNode) ? classes.selected : '' )
                             return (
-                                <div className={classes.entity} key={index} onClick={() => consume(topic)}>
+                                <div className={classCombination} key={index} onClick={() => consume(topic)}>
                                     <h2>{topic}</h2>
                                 </div>
                             )
@@ -186,10 +203,13 @@ function App() {
                 <h1>Consumers</h1>
                 <div>
                     {
+                        
 
                         consumers.map((consumer, index) => {
+                            const concatId = `consumer_${consumer.consumerId}`
+                            const classCombination = clsx(classes.entity, (concatId === activeNode) ? classes.selected : '' )
                             return (
-                                <div className={classes.entity} key={index}>
+                                <div className={classCombination} key={index}>
                                     <h2>Name: {consumer.consumerId}</h2>
                                     <h2>GroupID: {consumer.groupId}</h2>
                                     {/* <h2>Host: {consumer.host}</h2> */}

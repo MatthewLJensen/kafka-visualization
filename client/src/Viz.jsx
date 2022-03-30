@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
-const Viz = () => {
+const Viz = (props) => {
     const visRef = useRef(null)
     const network = useRef(null)
     const data = useRef({})
@@ -69,19 +69,19 @@ const Viz = () => {
             network.current.body.data.edges.update(edgesArray)
         }
 
-        // if (network.current) {
-        //     network.current.on("selectNode", function (params) {
-        //         var selectedNodeId = params.nodes[0];
-        //         var node = network.current.body.nodes[selectedNodeId];
-        //         console.log(node);
-        //     });
+        if (network.current) {
+            network.current.on("selectNode", function (params) {
+                var selectedNodeId = params.nodes[0];
+                var node = network.current.body.nodes[selectedNodeId];
+                props.setActiveNode(node.id)
+            });
         
-        //     network.current.on("deselectNode", function (params) {
-        //         var deselectedNodeId = params.previousSelection.nodes[0];
-        //         var node = network.current.body.nodes[deselectedNodeId];
-        //         console.log(node);
-        //     });
-        // }
+            network.current.on("deselectNode", function (params) {
+                var deselectedNodeId = params.previousSelection.nodes[0];
+                var node = network.current.body.nodes[deselectedNodeId];
+                props.setActiveNode(null)
+            });
+        }
         
 
     }
