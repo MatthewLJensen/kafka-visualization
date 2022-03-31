@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
-const Graph = (props) => {
+const Graph = ({ setActiveNode, activeNode }) => {
     const visRef = useRef(null)
     const network = useRef(null)
     const data = useRef({})
@@ -107,13 +107,13 @@ const Graph = (props) => {
             network.current = visRef.current && new Network(visRef.current, graph, options)
 
             network.current.on("selectNode", function (params) {
-                var selectedNodeId = params.nodes[0]
-                var node = network.current.body.nodes[selectedNodeId]
-                props.setActiveNode(node.id)
+                const selectedNodeId = params.nodes[0]
+                const node = network.current.body.nodes[selectedNodeId]
+                setActiveNode(node.id)
             })
 
             network.current.on("deselectNode", function (params) {
-                props.setActiveNode(null)
+                setActiveNode(null)
             })
 
         } else {
@@ -133,11 +133,15 @@ const Graph = (props) => {
         window.addEventListener('topicsUpdate', startNetwork)
 
         return () => {
-            window.removeEventListener('producersUpdate')
-            window.removeEventListener('consumersUpdate')
-            window.removeEventListener('topicsUpdate')
+            window.removeEventListener('producersUpdate', startNetwork)
+            window.removeEventListener('consumersUpdate', startNetwork)
+            window.removeEventListener('topicsUpdate', startNetwork)
         }
     }, [])
+
+    useEffect(() => {
+        activeNode && network.current.selectNodes([activeNode])
+    }, [activeNode])
 
     return (
         <div id="network" ref={visRef} style={{ width: '100%', height: '600px' }}></div>

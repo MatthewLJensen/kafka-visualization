@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
+import { ToastContainer, toast, Flip } from 'react-toastify'
 import { createUseStyles } from 'react-jss'
 import clsx from 'clsx'
 
 import Graph from './Graph'
+
+import 'react-toastify/dist/ReactToastify.css'
 
 const socket = io(':4000')
 
@@ -68,6 +71,7 @@ function App() {
     const [consumers, setConsumers] = useState([])
     const [messages, setMessages] = useState([])
     const [topics, setTopics] = useState([])
+    const [consumeTopic, setConsumeTopic] = useState(null)
     const [activeNode, setActiveNode] = useState(null)
 
     useEffect(() => {
@@ -114,22 +118,16 @@ function App() {
 
     }, [])
 
-    const [consumeTopic, setConsumeTopic] = useState(null)
-
-    const consume = (topic) => {
-        console.log(topic)
-        setConsumeTopic(topic)
-    }
-
     useEffect(() => {
         if (consumeTopic) {
             socket.emit('consume', consumeTopic)
-
+            
             const topicsMessageListener = (data) => {
-                console.log(data)
-                setMessages(prevMessages => {
-                    return [...prevMessages, data]
-                })
+                // setMessages(prevMessages => {
+                //     return [...prevMessages, data]
+                // })
+
+                toast(data)
             }
 
             socket.on('filtered_message', topicsMessageListener)
@@ -143,9 +141,16 @@ function App() {
 
     return (
         <div className={classes.root}>
-
+            <ToastContainer
+                theme="dark"
+                position="bottom-right"
+                pauseOnHover={true}
+                newestOnTop={true}
+                transition={Flip}
+                limit={5}
+            />
             <div id="visualizer-parent" className={classes.visualizerContainer}>
-                <Graph setActiveNode={setActiveNode}/>
+                <Graph activeNode={activeNode} setActiveNode={setActiveNode}/>
             </div>
 
             <div className={classes.entityList}>
@@ -160,7 +165,11 @@ function App() {
 
                             return (
                                 // A producer is considered inactive if it hasn't produced in over 10 seconds.
-                                <div className={classCombination} key={index}>
+                                <div 
+                                    className={classCombination} 
+                                    key={index}
+                                    onClick={() => setActiveNode(concatId)}
+                                >
                                     <h2>Name: {producers[key].id}</h2>
                                     <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
                                     <h2>Last Updated: {timeStamp(new Date(producers[key].lastUpdated))}</h2>
@@ -182,7 +191,13 @@ function App() {
                             const concatId = `topic_${topic}`
                             const classCombination = clsx(classes.entity, (concatId === activeNode) ? classes.selected : '' )
                             return (
-                                <div className={classCombination} key={index} onClick={() => consume(topic)}>
+                                <div 
+                                    className={classCombination} 
+                                    key={index} 
+                                    onClick={() => {
+                                        setConsumeTopic(topic)
+                                        setActiveNode(concatId)
+                                    }}>
                                     <h2>{topic}</h2>
                                 </div>
                             )
@@ -199,7 +214,11 @@ function App() {
                             const concatId = `consumer_${consumer.consumerId}`
                             const classCombination = clsx(classes.entity, (concatId === activeNode) ? classes.selected : '' )
                             return (
-                                <div className={classCombination} key={index}>
+                                <div 
+                                    className={classCombination} 
+                                    key={index}
+                                    onClick={() => setActiveNode(concatId)}
+                                >
                                     <h2>Name: {consumer.consumerId}</h2>
                                     <h2>GroupID: {consumer.groupId}</h2>
                                     {/* <h2>Host: {consumer.host}</h2> */}
@@ -222,12 +241,7 @@ function App() {
                     })
                 }
             </div>
-
-
         </div>
-
-
-
     )
 }
 
