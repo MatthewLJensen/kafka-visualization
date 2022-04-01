@@ -7,14 +7,14 @@ const brokers = ["localhost:9092"]
 
 
 // we define an async function that writes a new message each second
-const produce = async (clientId, primaryInterval, secondaryInterval) => {
+const produce = async (clientId, primaryInterval, secondaryInterval, topic) => {
     // initialize a new kafka client and initialize a producer from it
     const kafka = new Kafka({ clientId, brokers })
     const producer = kafka.producer()
     const traceProducer = kafka.producer()
 
     // this is the topic to which we want to write messages
-    const TOPIC = "locations"
+    const TOPIC = topic
 
     let mainIndex = 0
     let secondaryIndex = 0

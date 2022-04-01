@@ -64,11 +64,20 @@ async function getConsumers() {
                 //console.log(AssignerProtocol.MemberAssignment.decode(consumer.memberAssignment).userData.toString())
                 //console.log(AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata))
                 //console.log(AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata).userData.toString())
+                let subscriptions = null
+                try {
+                    subscriptions = AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata)
+                }
+                catch (error){
+                    console.log("failed to grab subscriptions")
+                    console.log(error)
+                }
+                
                 current_consumers.push({
                     groupId: group.groupId,
                     consumerId: consumer.clientId,
                     host: consumer.clientHost,
-                    subscriptions: AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata)
+                    subscriptions: subscriptions
                 })
             }
 
