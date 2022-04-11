@@ -6,15 +6,29 @@ const brokers = ["localhost:9092"]
 
 
 
-const io = new Server({ cors: {
-	origin: '*',
-} })
+const io = new Server({
+    cors: {
+        origin: '*',
+    }
+})
 
 io.on('connection', socket => {
-	console.log('Client connected')
-    socket.on("consume", (topic) => {
+    console.log('Client connected')
+
+    // User specified topic consumer
+    let consumer = null
+    socket.on("consume", async (topic) => {
         console.log("consume", topic)
-        consume_topic(topic, "client_consumer_group", "client_" + socket.id)
+        if (consumer !== null) {
+            await consumer.disconnect()
+        }
+        consumer = consume_topic(topic, "client_consumer_group", "client_" + socket.id)
+    })
+    socket.on("stop_consume", async () => {
+        if (consumer !== null) {
+            await consumer.disconnect()
+            consumer = null
+        }
     })
 })
 io.listen(4000)
@@ -68,11 +82,11 @@ async function getConsumers() {
                 try {
                     subscriptions = AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata)
                 }
-                catch (error){
+                catch (error) {
                     console.log("failed to grab subscriptions")
                     console.log(error)
                 }
-                
+
                 current_consumers.push({
                     groupId: group.groupId,
                     consumerId: consumer.clientId,
@@ -89,8 +103,8 @@ async function getConsumers() {
 const consume_metadata = async (topic, groupId, id) => {
     const consumer = kafka.consumer({ groupId: groupId, clientId: id })
 
-	await consumer.connect()
-	await consumer.subscribe({ topic })
+    await consumer.connect()
+    await consumer.subscribe({ topic })
     await consumer.run({
         eachMessage: ({ message }) => {
             let producerId = message.headers.producerId.toString()
@@ -112,8 +126,8 @@ const consume_metadata = async (topic, groupId, id) => {
 const consume_topic = async (topic, groupId, id) => {
     const client_consumer = kafka.consumer({ groupId: groupId, clientId: id })
 
-	await client_consumer.connect()
-	await client_consumer.subscribe({ topic })
+    await client_consumer.connect()
+    await client_consumer.subscribe({ topic })
     await client_consumer.run({
         eachMessage: ({ message }) => {
 
@@ -123,6 +137,7 @@ const consume_topic = async (topic, groupId, id) => {
             io.emit('filtered_message', message.value.toString())
         },
     })
+    return client_consumer
 }
 
 const add_producer = (producerId, createdAt, topic) => {

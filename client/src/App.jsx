@@ -136,6 +136,9 @@ function App() {
                 socket.off('filtered_message', topicsMessageListener)
             }
         }
+        else {
+            socket.emit('stop_consume')
+        }
 
     }, [consumeTopic])
 
@@ -168,7 +171,10 @@ function App() {
                                 <div 
                                     className={classCombination} 
                                     key={index}
-                                    onClick={() => setActiveNode(concatId)}
+                                    onClick={() => {
+                                        setConsumeTopic(null)
+                                        setActiveNode(concatId)
+                                    }}
                                 >
                                     <h2>Name: {producers[key].id}</h2>
                                     <h2>Created: {timeStamp(new Date(producers[key].createdAt))}</h2>
@@ -217,7 +223,10 @@ function App() {
                                 <div 
                                     className={classCombination} 
                                     key={index}
-                                    onClick={() => setActiveNode(concatId)}
+                                    onClick={() => {
+                                        setConsumeTopic(null)
+                                        setActiveNode(concatId)
+                                    }}
                                 >
                                     <h2>Name: {consumer.consumerId}</h2>
                                     <h2>GroupID: {consumer.groupId}</h2>
