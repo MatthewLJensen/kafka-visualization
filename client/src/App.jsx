@@ -119,14 +119,14 @@ function App() {
     }, [])
 
     useEffect(() => {
-        if (consumeTopic) {
+        if (consumeTopic !== null) {
             socket.emit('consume', consumeTopic)
             
             const topicsMessageListener = (data) => {
                 // setMessages(prevMessages => {
                 //     return [...prevMessages, data]
                 // })
-
+                console.log(data)
                 toast(data)
             }
 
@@ -150,7 +150,7 @@ function App() {
                 pauseOnHover={true}
                 newestOnTop={true}
                 transition={Flip}
-                limit={5}
+                
             />
             <div id="visualizer-parent" className={classes.visualizerContainer}>
                 <Graph activeNode={activeNode} setActiveNode={setActiveNode}/>

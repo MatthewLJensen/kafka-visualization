@@ -14,22 +14,25 @@ const io = new Server({
 
 io.on('connection', socket => {
     console.log('Client connected')
-
-    // User specified topic consumer
-    let consumer = null
+    let clientConsumer = kafka.consumer({ groupId: "client_consumer_group", clientId: "client_" + socket.id })
     socket.on("consume", async (topic) => {
         console.log("consume", topic)
-        if (consumer !== null) {
-            await consumer.disconnect()
+        if (clientConsumer != null) {
+            console.log("disconnecting client consumer")
+            await clientConsumer.disconnect()
+            clientConsumer = null
         }
-        consumer = consume_topic(topic, "client_consumer_group", "client_" + socket.id)
+        console.log
+        clientConsumer = kafka.consumer({ groupId: "client_consumer_group", clientId: "client_" + socket.id })
+        consume_topic(topic, clientConsumer)
     })
-    socket.on("stop_consume", async () => {
-        if (consumer !== null) {
-            await consumer.disconnect()
-            consumer = null
-        }
-    })
+    // socket.on("stop_consume", async () => {
+    //     console.log("disconnecting client consumer")
+    //     if (clientConsumer != null) {
+    //         await clientConsumer.disconnect()
+    //         clientConsumer = null
+    //     }
+    // })
 })
 io.listen(4000)
 
@@ -71,13 +74,6 @@ async function getConsumers() {
     for (let group of describedGroups.groups) {
         for (let consumer of group.members) {
             if (consumer.clientId !== "JSAdmin") {
-                // console.log(consumer.clientId)
-                // console.log()
-                //console.log(consumer.memberMetadata)
-                //console.log(AssignerProtocol.MemberAssignment.decode(consumer.memberAssignment))
-                //console.log(AssignerProtocol.MemberAssignment.decode(consumer.memberAssignment).userData.toString())
-                //console.log(AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata))
-                //console.log(AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata).userData.toString())
                 let subscriptions = null
                 try {
                     subscriptions = AssignerProtocol.MemberMetadata.decode(consumer.memberMetadata)
@@ -123,8 +119,8 @@ const consume_metadata = async (topic, groupId, id) => {
     })
 }
 
-const consume_topic = async (topic, groupId, id) => {
-    const client_consumer = kafka.consumer({ groupId: groupId, clientId: id })
+const consume_topic = async (topic, client_consumer) => {
+    
 
     await client_consumer.connect()
     await client_consumer.subscribe({ topic })
@@ -137,7 +133,6 @@ const consume_topic = async (topic, groupId, id) => {
             io.emit('filtered_message', message.value.toString())
         },
     })
-    return client_consumer
 }
 
 const add_producer = (producerId, createdAt, topic) => {

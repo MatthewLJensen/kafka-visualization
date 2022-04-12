@@ -7,7 +7,7 @@ const brokers = ["localhost:9092"]
 
 
 // we define an async function that writes a new message each second
-const produce = async (clientId, primaryInterval, secondaryInterval, topic) => {
+const produce = async (clientId, primaryInterval, secondaryInterval, topic, generator) => {
     // initialize a new kafka client and initialize a producer from it
     const kafka = new Kafka({ clientId, brokers })
     const producer = kafka.producer()
@@ -67,10 +67,7 @@ const produce = async (clientId, primaryInterval, secondaryInterval, topic) => {
         return [
             {
                 key: index.toString(),
-                value: JSON.stringify({
-                    latitude: getRandomInRange(-180, 180, 5),
-                    longitude: getRandomInRange(-180, 180, 5)
-                }),
+                value: generator(),
                 headers: {
                     identifier: clientId
                 }
@@ -121,10 +118,7 @@ const produce_secondary = async (producer, topic, messages) => {
 
 
 
-function getRandomInRange(from, to, fixed) {
-    // .toFixed() returns string, so ' * 1' is a trick to convert to number
-    return (Math.random() * (to - from) + from).toFixed(fixed) * 1
-}
+
 
 export {
     produce
