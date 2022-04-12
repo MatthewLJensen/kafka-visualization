@@ -14,25 +14,18 @@ const io = new Server({
 
 io.on('connection', socket => {
     console.log('Client connected')
-    let clientConsumer = kafka.consumer({ groupId: "client_consumer_group", clientId: "client_" + socket.id })
+    let clientConsumer = null
+    let groupId = 0
     socket.on("consume", async (topic) => {
         console.log("consume", topic)
         if (clientConsumer != null) {
-            console.log("disconnecting client consumer")
-            await clientConsumer.disconnect()
+            await clientConsumer.stop()
             clientConsumer = null
+            groupId++
         }
-        console.log
-        clientConsumer = kafka.consumer({ groupId: "client_consumer_group", clientId: "client_" + socket.id })
+        clientConsumer = kafka.consumer({ groupId: "client_consumer_group_" + groupId, clientId: "client_" + socket.id })
         consume_topic(topic, clientConsumer)
     })
-    // socket.on("stop_consume", async () => {
-    //     console.log("disconnecting client consumer")
-    //     if (clientConsumer != null) {
-    //         await clientConsumer.disconnect()
-    //         clientConsumer = null
-    //     }
-    // })
 })
 io.listen(4000)
 
@@ -123,7 +116,7 @@ const consume_topic = async (topic, client_consumer) => {
     
 
     await client_consumer.connect()
-    await client_consumer.subscribe({ topic })
+    await client_consumer.subscribe({ topic, fromBeginning: false })
     await client_consumer.run({
         eachMessage: ({ message }) => {
 
