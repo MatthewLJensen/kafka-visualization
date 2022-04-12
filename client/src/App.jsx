@@ -142,6 +142,12 @@ function App() {
 
     }, [consumeTopic])
 
+    useEffect(() => {
+        if (activeNode === null) {
+            setConsumeTopic(null)
+        }
+    }, [activeNode])
+
     return (
         <div className={classes.root}>
             <ToastContainer

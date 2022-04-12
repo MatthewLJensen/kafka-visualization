@@ -23,8 +23,17 @@ io.on('connection', socket => {
             clientConsumer = null
             groupId++
         }
-        clientConsumer = kafka.consumer({ groupId: "client_consumer_group_" + groupId, clientId: "client_" + socket.id })
+        clientConsumer = kafka.consumer({ groupId: "client_consumer_group_" + groupId + Math.random().toString(), clientId: "client_" + socket.id })
         consume_topic(topic, clientConsumer)
+    })
+
+    socket.on("stop_consume", async () => {
+        console.log("stopping client consumer")
+        if (clientConsumer != null) {
+            await clientConsumer.stop()
+            clientConsumer = null
+            groupId++
+        }
     })
 })
 io.listen(4000)
